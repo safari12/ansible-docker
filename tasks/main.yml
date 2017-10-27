@@ -1,0 +1,44 @@
+- name: update packages
+  apt:
+    update_cache: yes
+
+- name: Install list of packages
+  apt: name={{item}} state=installed
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+- name: Add official GPG key
+  apt_key:
+    keyserver: https://download.docker.com/linux/ubuntu/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+  register: add_repository_key
+  ignore_errors: true
+
+- name: Alternative | Add Docker repository key
+  shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+  when: add_repository_key|failed
+
+- name: Add official repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_lsb.codename|lower }} stable"
+    mode: '644'
+    update_cache: yes
+    state: present
+
+- name: Install package
+  apt:
+    name: docker-ce
+    state: present
+
+- name: Add group
+  command: groupadd docker
+  ignore_errors: true
+
+- name: Add user to group
+  command: usermod -aG docker safari
+  ignore_errors: true
+
