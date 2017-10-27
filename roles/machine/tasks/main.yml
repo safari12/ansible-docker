@@ -1,0 +1,19 @@
+- shell: uname -s
+  ignore_errors: yes
+  register: uname_sys
+
+- shell: uname -m
+  ignore_errors: yes
+  register: uname_machine
+
+- name: Download binary release
+  get_url:
+    url: "https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-{{uname_sys}}-{{uname_machine}}"
+    dest: /tmp/docker-machine
+    mode: +x
+
+- name: Copy binary to user local bin 
+  copy:
+    src: /tmp/docker-machine
+    dest: /usr/local/bin/docker-machine
+    mode: +x
