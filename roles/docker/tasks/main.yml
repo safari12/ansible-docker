@@ -12,14 +12,14 @@
 
 - name: Add official GPG key
   apt_key:
-    keyserver: https://download.docker.com/linux/ubuntu/gpg
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    keyserver: "{{apt_key_url}}"
+    id: "{{apt_key_sig}}"
     state: present
   register: add_repository_key
   ignore_errors: true
 
 - name: Alternative | Add Docker repository key
-  shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+  shell: "curl -sSL {{apt_key_url}} | sudo apt-key add -"
   when: add_repository_key|failed
 
 - name: Add official repository
@@ -31,14 +31,17 @@
 
 - name: Install package
   apt:
-    name: docker-ce
+    name: "docker-{{docker_edition}}"
     state: present
 
 - name: Add group
-  command: groupadd docker
-  ignore_errors: true
+  group:
+    name: docker
+    state: present
 
 - name: Add user to group
-  command: usermod -aG docker safari
-  ignore_errors: true
-
+  user:
+    name: "{{user}}"
+    shell: /bin/bash
+    group: docker
+    append: yes
