@@ -10,12 +10,12 @@
 
 - name: Download binary release
   get_url:
-    url: "https://github.com/docker/machine/releases/download/{{version}}/docker-machine-{{uname_sys.stdout}}-{{uname_machine.stdout}}"
-    dest: /tmp/docker-machine
+    url: "https://github.com/docker/compose/releases/download/{{version}}/docker-compose-{{uname_sys.stdout}}-{{uname_machine.stdout}}"
+    dest: /tmp/docker-compose
     mode: +x
 
 - name: Copy binary to user local bin 
   copy:
-    src: /tmp/docker-machine
-    dest: /usr/local/bin/docker-machine
+    src: /tmp/docker-compose
+    dest: /usr/local/bin/docker-compose
     mode: +x
