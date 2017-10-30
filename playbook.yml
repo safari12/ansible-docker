@@ -4,4 +4,5 @@
     user: safari
   roles:
     - docker
-    - machine
+    - docker-machine
+    - docker-compose
