@@ -1,0 +1,47 @@
+- name: update packages
+  apt:
+    update_cache: yes
+
+- name: Install list of packages
+  apt: name={{item}} state=installed
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+- name: Add official GPG key
+  apt_key:
+    keyserver: "{{apt_key_url}}"
+    id: "{{apt_key_sig}}"
+    state: present
+  register: add_repository_key
+  ignore_errors: true
+
+- name: Alternative | Add Docker repository key
+  shell: "curl -sSL {{apt_key_url}} | sudo apt-key add -"
+  when: add_repository_key|failed
+
+- name: Add official repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_lsb.codename|lower }} stable"
+    mode: '644'
+    update_cache: yes
+    state: present
+
+- name: Install package
+  apt:
+    name: "docker-{{docker_edition}}"
+    state: present
+
+- name: Add group
+  group:
+    name: docker
+    state: present
+
+- name: Add user to group
+  user:
+    name: "{{user}}"
+    shell: /bin/bash
+    group: docker
+    append: yes

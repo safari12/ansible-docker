@@ -1,0 +1,8 @@
+- hosts: all
+  become: yes
+  vars:
+    user: safari
+  roles:
+    - docker
+    - docker-machine
+    - docker-compose

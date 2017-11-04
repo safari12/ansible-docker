@@ -1,0 +1,21 @@
+- name: Registering uname sys variable
+  shell: uname -s
+  ignore_errors: yes
+  register: uname_sys
+
+- name: Registering uname machine variable
+  shell: uname -m
+  ignore_errors: yes
+  register: uname_machine
+
+- name: Download binary release
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{version}}/docker-compose-{{uname_sys.stdout}}-{{uname_machine.stdout}}"
+    dest: /tmp/docker-compose
+    mode: +x
+
+- name: Copy binary to user local bin 
+  copy:
+    src: /tmp/docker-compose
+    dest: /usr/local/bin/docker-compose
+    mode: +x
