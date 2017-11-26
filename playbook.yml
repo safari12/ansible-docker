@@ -1,8 +1,5 @@
 - hosts: all
-  become: yes
-  vars:
-    user: safari
+  gather_facts: false
   roles:
     - docker
-    - docker-machine
     - docker-compose

@@ -15,16 +15,15 @@
     keyserver: "{{apt_key_url}}"
     id: "{{apt_key_sig}}"
     state: present
-  register: add_repository_key
-  ignore_errors: true
 
-- name: Alternative | Add Docker repository key
-  shell: "curl -sSL {{apt_key_url}} | sudo apt-key add -"
-  when: add_repository_key|failed
+- name: Registering lsb release variable
+  shell: lsb_release -cs
+  ignore_errors: yes
+  register: lsb_release
 
 - name: Add official repository
   apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_lsb.codename|lower }} stable"
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ lsb_release.stdout }} stable"
     mode: '644'
     update_cache: yes
     state: present
@@ -41,7 +40,7 @@
 
 - name: Add user to group
   user:
-    name: "{{user}}"
+    name: "{{ ansible_user }}"
     shell: /bin/bash
-    group: docker
+    groups: docker
     append: yes
