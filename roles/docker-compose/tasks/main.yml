@@ -19,3 +19,4 @@
     src: /tmp/docker-compose
     dest: /usr/local/bin/docker-compose
     mode: +x
+    remote_src: yes
